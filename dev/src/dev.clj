@@ -7,6 +7,7 @@
              [core :as mbc]
              [db :as mdb]
              [driver :as driver]
+             [cloud :as cloud]
              [handler :as handler]
              [plugins :as pluguns]
              [server :as server]

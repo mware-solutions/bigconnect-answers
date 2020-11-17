@@ -2,6 +2,7 @@
   "Default LDAP integration. This integration is used by OSS or for EE if enterprise features are not enabled."
   (:require [clj-ldap.client :as ldap-client]
             [clojure.string :as str]
+            [clojure.tools.logging :as log]
             [metabase.integrations.common :as integrations.common]
             [metabase.integrations.ldap.interface :as i]
             [metabase.models.user :as user :refer [User]]
@@ -54,29 +55,29 @@
            last-name-attribute
            email-attribute
            sync-groups?]
-    :as   settings} :- i/LDAPSettings]
+    :as   settings} :- i/LDAPSettings
+   username :- String]
   (let [{first-name (keyword first-name-attribute)
          last-name  (keyword last-name-attribute)
          email      (keyword email-attribute)} result]
     ;; Make sure we got everything as these are all required for new accounts
-    (when-not (some empty? [dn first-name last-name email])
-      {:dn         dn
-       :first-name first-name
-       :last-name  last-name
-       :email      email
-       :groups     (when sync-groups?
-                     ;; Active Directory and others (like FreeIPA) will supply a `memberOf` overlay attribute for
-                     ;; groups. Otherwise we have to make the inverse query to get them.
-                     (or (:memberof result)
-                         (user-groups ldap-connection dn settings)
-                         []))})))
+    {:dn         dn
+     :first-name (if (str/blank? first-name) "Tenant" first-name)
+     :last-name  (if (str/blank? first-name) "Administrator" last-name)
+     :email      (if (str/blank? email) (str username "@cloud.bigconnect.io") email)
+     :groups     (when sync-groups?
+                   ;; Active Directory and others (like FreeIPA) will supply a `memberOf` overlay attribute for
+                   ;; groups. Otherwise we have to make the inverse query to get them.
+                   (or (:memberof result)
+                       (user-groups ldap-connection dn settings)
+                       []))}))
 
 (s/defn ^:private find-user* :- (s/maybe i/UserInfo)
   [ldap-connection :- LDAPConnectionPool
    username        :- su/NonBlankString
    settings        :- i/LDAPSettings]
   (when-let [result (search ldap-connection username settings)]
-    (ldap-search-result->user-info ldap-connection result settings)))
+    (ldap-search-result->user-info ldap-connection result settings username)))
 
 
 ;;; --------------------------------------------- fetch-or-create-user! ----------------------------------------------

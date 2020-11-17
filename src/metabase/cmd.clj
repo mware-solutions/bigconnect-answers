@@ -21,6 +21,7 @@
             [metabase
              [config :as config]
              [db :as mdb]
+             [cloud :as cloud]
              [util :as u]]
             [metabase.plugins.classloader :as classloader]
             [metabase.query-processor.util :as qp.util]
@@ -39,6 +40,11 @@
    (classloader/require 'metabase.cmd.load-from-h2)
    (binding [mdb/*disable-data-migrations* true]
      ((resolve 'metabase.cmd.load-from-h2/load-from-h2!) h2-connection-string))))
+
+(defn ^:command cloud-init
+  "Initialize database with BigConnect Cloud settings"
+  []
+  (cloud/init-tenant))
 
 (defn ^:command dump-to-h2
   "Transfer data from existing database to newly created H2 DB with specified filename.

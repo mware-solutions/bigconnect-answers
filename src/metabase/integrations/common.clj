@@ -27,8 +27,7 @@
       (log/debugf "Removing user %s from group(s) %s" user-id to-remove)
       (db/delete! PermissionsGroupMembership :group_id [:in to-remove], :user_id user-id))
     ;; add new memberships for any groups as needed
-    (doseq [id    to-add
-            :when (not (special-group-ids id))]
+    (doseq [id    to-add]
       (log/debugf "Adding user %s to group %s" user-id id)
       ;; if adding membership fails for one reason or another (i.e. if the group doesn't exist) log the error add the
       ;; user to the other groups rather than failing entirely

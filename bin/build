@@ -2,12 +2,7 @@
 
 set -e
 
-MB_EDITION=${MB_EDITION:=oss}
-
-if [ "$MB_EDITION" != ee ] && [ "$MB_EDITION" != oss ]; then
-    echo "MB_EDITION must be either 'ee' or 'oss'."
-    exit 1
-fi
+MB_EDITION=oss
 
 # Generate the resources/version.properties file
 version() {
