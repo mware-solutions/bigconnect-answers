@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# ./build-metabase.sh
+
 export ANSWERS_VERSION=0.0.1
 
 docker login registry.cloud.bigconnect.io
