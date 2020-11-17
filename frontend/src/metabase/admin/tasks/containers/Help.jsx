@@ -101,27 +101,6 @@ export default class Help extends Component {
     const detailString = JSON.stringify(details, null, 2);
     return (
       <Box p={3}>
-        <AdminHeader title={t`Help`} className="mb2" />
-        <Box my={2} style={{ maxWidth: "468px" }}>
-          <ol>
-            <HelpLink
-              title={t`Metabase Documentation`}
-              description={t`Includes a troubleshooting guide`}
-              link={MetabaseSettings.docsUrl()}
-            />
-            <HelpLink
-              title={t`Post on the Metabase support forum`}
-              description={t`A community forum for all things Metabase`}
-              link={discourseLink(detailString)}
-            />
-            <HelpLink
-              title={t`File a bug report`}
-              description={t`Create a GitHub issue (includes the diagnostic info below)`}
-              link={githubIssueLink(detailString)}
-            />
-          </ol>
-        </Box>
-
         <Box my={2}>
           <AdminHeader title={t`Diagnostic Info`} className="mb2" />
           <p>{t`Please include these details in support requests. Thank you!`}</p>

@@ -2,6 +2,7 @@
   "Put everything needed for REPL development within easy reach"
   (:require [clojure.core.async :as a]
             [honeysql.core :as hsql]
+            [toucan.db :as db]
             [metabase
              [core :as mbc]
              [db :as mdb]
@@ -12,8 +13,11 @@
              [test :as mt]
              [util :as u]]
             [metabase.api.common :as api-common]
+            [metabase.models.user :as user :refer [User]]
+            [metabase.public-settings :as public-settings]
             [metabase.driver.sql-jdbc.execute :as sql-jdbc.execute]
             [metabase.query-processor.timezone :as qp.timezone]
+            [metabase.setup :as setup]
             [metabase.test.data.impl :as data.impl]))
 
 (def initialized?
@@ -116,3 +120,20 @@
       (catch InterruptedException e
         (a/>!! canceled-chan :cancel)
         (throw e)))))
+
+(defn setup-first-user []
+  (let [new-user (db/insert! User
+                             :email        "admin@example.com"
+                             :first_name   "dev"
+                             :last_name    "dev"
+                             :password     (str (java.util.UUID/randomUUID))
+                             :is_superuser true)]
+    (user/set-password! (:id new-user) "dev")))
+
+(defn setup-site []
+  (public-settings/site-name "BigConnect Answers")
+  (public-settings/site-url "answers-111111.cloud.bigconnect.io")
+  (public-settings/admin-email "arne@example.com")
+  (public-settings/anon-tracking-enabled false)
+  (public-settings/check-for-updates false)
+  (setup/clear-token!))

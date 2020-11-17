@@ -118,13 +118,10 @@ class Settings {
       // if there's no tag or it's an EE version that might not have a matching CE version, link to latest
       tag = "latest";
     }
-    if (page) {
-      page = `${page}.html`;
-    }
     if (anchor) {
       anchor = `#${anchor}`;
     }
-    return `https://www.metabase.com/docs/${tag}/${page}${anchor}`;
+    return `https://docs.bigconnect.io/cloud/answers/${page}${anchor}`;
   }
 
   newVersionAvailable() {

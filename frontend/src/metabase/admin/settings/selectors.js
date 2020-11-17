@@ -76,11 +76,6 @@ const SECTIONS = updateSectionsWithPlugins({
         allowValueCollection: true,
       },
       {
-        key: "anon-tracking-enabled",
-        display_name: t`Anonymous Tracking`,
-        type: "boolean",
-      },
-      {
         key: "humanization-strategy",
         display_name: t`Friendly Table and Field Names`,
         type: "select",
@@ -102,17 +97,6 @@ const SECTIONS = updateSectionsWithPlugins({
       {
         key: "enable-xrays",
         display_name: t`Enable X-ray features`,
-        type: "boolean",
-      },
-    ],
-  },
-  updates: {
-    name: t`Updates`,
-    component: SettingsUpdatesForm,
-    settings: [
-      {
-        key: "check-for-updates",
-        display_name: t`Check for updates`,
         type: "boolean",
       },
     ],
@@ -166,30 +150,6 @@ const SECTIONS = updateSectionsWithPlugins({
         type: "string",
         required: true,
         validations: [["email", t`That's not a valid email address`]],
-      },
-    ],
-  },
-  slack: {
-    name: "Slack",
-    component: SettingsSlackForm,
-    settings: [
-      {
-        key: "slack-token",
-        display_name: t`Slack API Token`,
-        description: "",
-        placeholder: t`Enter the token you received from Slack`,
-        type: "string",
-        required: false,
-        autoFocus: true,
-      },
-      {
-        key: "metabot-enabled",
-        display_name: "MetaBot",
-        type: "boolean",
-        // TODO: why do we have "defaultValue" here in addition to the "default" specified by the backend?
-        defaultValue: false,
-        required: true,
-        autoFocus: false,
       },
     ],
   },
@@ -275,61 +235,6 @@ const SECTIONS = updateSectionsWithPlugins({
         display_name: t`Shared Questions`,
         widget: PublicLinksQuestionListing,
         getHidden: settings => !settings["enable-public-sharing"],
-      },
-    ],
-  },
-  embedding_in_other_applications: {
-    name: t`Embedding in other Applications`,
-    settings: [
-      {
-        key: "enable-embedding",
-        description: null,
-        widget: EmbeddingLegalese,
-        getHidden: settings => settings["enable-embedding"],
-        onChanged: async (
-          oldValue,
-          newValue,
-          settingsValues,
-          onChangeSetting,
-        ) => {
-          // Generate a secret key if none already exists
-          if (
-            !oldValue &&
-            newValue &&
-            !settingsValues["embedding-secret-key"]
-          ) {
-            const result = await UtilApi.random_token();
-            await onChangeSetting("embedding-secret-key", result.token);
-          }
-        },
-      },
-      {
-        key: "enable-embedding",
-        display_name: t`Enable Embedding Metabase in other Applications`,
-        type: "boolean",
-        getHidden: settings => !settings["enable-embedding"],
-      },
-      {
-        widget: EmbeddingLevel,
-        getHidden: settings => !settings["enable-embedding"],
-      },
-      {
-        key: "embedding-secret-key",
-        display_name: t`Embedding secret key`,
-        widget: SecretKeyWidget,
-        getHidden: settings => !settings["enable-embedding"],
-      },
-      {
-        key: "-embedded-dashboards",
-        display_name: t`Embedded Dashboards`,
-        widget: EmbeddedDashboardListing,
-        getHidden: settings => !settings["enable-embedding"],
-      },
-      {
-        key: "-embedded-questions",
-        display_name: t`Embedded Questions`,
-        widget: EmbeddedQuestionListing,
-        getHidden: settings => !settings["enable-embedding"],
       },
     ],
   },

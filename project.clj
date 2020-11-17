@@ -12,17 +12,11 @@
                                         "-user" "" "-password" "" "-driver" "org.h2.Driver"]
    "generate-automagic-dashboards-pot" ["with-profile" "+generate-automagic-dashboards-pot" "run"]
    "install"                           ["with-profile" "+install" "install"]
-   "install-ee"                        ["with-profile" "+install,+ee" "install"]
    "install-for-building-drivers"      ["with-profile" "install-for-building-drivers" "install"]
-   "install-for-building-drivers-ee"   ["with-profile" "install-for-building-drivers,+ee" "install"]
    "run"                               ["with-profile" "+run" "run"]
-   "run-ee"                            ["with-profile" "+run,+ee" "run"]
    "run-with-repl"                     ["with-profile" "+run-with-repl" "repl"]
-   "run-with-repl-ee"                  ["with-profile" "+run-with-repl,+ee" "repl"]
    "ring"                              ["with-profile" "+ring" "ring"]
-   "ring-ee"                           ["with-profile" "+ring,+ee" "ring"]
    "test"                              ["with-profile" "+test" "test"]
-   "test-ee"                           ["with-profile" "+test,+ee" "test"]
    "bikeshed"                          ["with-profile" "+bikeshed" "bikeshed"
                                         "--max-line-length" "205"
                                         ;; see https://github.com/dakrone/lein-bikeshed/issues/41
@@ -31,15 +25,13 @@
    "eastwood"                          ["with-profile" "+eastwood" "eastwood"]
    "check-reflection-warnings"         ["with-profile" "+reflection-warnings" "check"]
    "docstring-checker"                 ["with-profile" "+docstring-checker" "docstring-checker"]
-   "cloverage"                         ["with-profile" "+cloverage" "cloverage"]
+   "cloverage"        `                 ["with-profile" "+cloverage" "cloverage"]
    ;; `lein lint` will run all linters
    "lint"                              ["do" ["eastwood"] ["bikeshed"] ["check-namespace-decls"] ["docstring-checker"] ["cloverage"]]
    "repl"                              ["with-profile" "+repl" "repl"]
-   "repl-ee"                           ["with-profile" "+repl,+ee" "repl"]
    "strip-and-compress"                ["with-profile" "+strip-and-compress,-user,-dev" "run"]
    "compare-h2-dbs"                    ["with-profile" "+compare-h2-dbs" "run"]
-   "uberjar"                           ["uberjar"]
-   "uberjar-ee"                        ["with-profile" "+ee" "uberjar"]}
+   "uberjar"                           ["uberjar"]}
 
   ;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ;; !!                                   PLEASE KEEP THESE ORGANIZED ALPHABETICALLY                                  !!
@@ -189,10 +181,6 @@
   {:oss ; exists for symmetry with the ee profile
    {}
 
-   :ee
-   {:source-paths ["enterprise/backend/src"]
-    :test-paths   ["enterprise/backend/test"]}
-
    :dev
    {:source-paths ["dev/src" "local/src"]
     :test-paths   ["test" "backend/mbql/test"]
@@ -223,7 +211,7 @@
     ["-Dlogfile.path=target/log"]
 
     :repl-options
-    {:init-ns user}} ; starting in the user namespace is a lot faster than metabase.core since it has less deps
+    {:init-ns dev}} ; starting in the user namespace is a lot faster than metabase.core since it has less deps
 
    ;; output test results in JUnit XML format
    :junit

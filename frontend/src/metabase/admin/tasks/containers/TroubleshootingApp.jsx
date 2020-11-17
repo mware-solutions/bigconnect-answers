@@ -19,10 +19,6 @@ export default class TroubleshootingApp extends Component {
         sidebar={
           <LeftNavPane>
             <LeftNavPaneItem
-              name={t`Help`}
-              path="/admin/troubleshooting/help"
-            />
-            <LeftNavPaneItem
               name={t`Tasks`}
               path="/admin/troubleshooting/tasks"
               index
@@ -30,10 +26,6 @@ export default class TroubleshootingApp extends Component {
             <LeftNavPaneItem
               name={t`Jobs`}
               path="/admin/troubleshooting/jobs"
-            />
-            <LeftNavPaneItem
-              name={t`Logs`}
-              path="/admin/troubleshooting/logs"
             />
           </LeftNavPane>
         }
