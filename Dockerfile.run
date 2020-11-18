@@ -18,9 +18,8 @@ RUN mkdir -p bin target/uberjar
 ADD target/uberjar/metabase.jar /app/target/uberjar/
 ADD bin/start /app/bin/
 
-# create the plugins directory, with writable permissions
-RUN mkdir -p /plugins
-RUN chmod a+rwx /plugins
+# create the plugins and database directory , with writable permissions
+RUN mkdir -p /plugins && mkdir -p /data && chmod a+rwx /plugins && chmod a+rwx /data
 
 # import AWS RDS cert into /etc/ssl/certs/java/cacerts
 ADD https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem .
@@ -31,6 +30,10 @@ RUN $JAVA_HOME/bin/keytool -noprompt -import -trustcacerts -alias aws-rds \
 
 # expose our default runtime port
 EXPOSE 3000
+
+ENV MB_DB_FILE=/data/metabase.db
+
+VOLUME /data
 
 # run it
 ENTRYPOINT ["/app/bin/start"]
