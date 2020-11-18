@@ -11,26 +11,32 @@
     [metabase.integrations.ldap :as ldap]))
 
 (defn setup-site [tenant-id]
+  (public-settings/application-name "BigConnect Answers")
   (public-settings/site-name "BigConnect Answers")
-  (public-settings/site-url (str "https://answers-" tenant-id ".cloud.bigconnect.io"))
-  (public-settings/redirect-all-requests-to-https false)
-  (public-settings/admin-email "admin@localhost")
   (public-settings/anon-tracking-enabled false)
   (public-settings/check-for-updates false)
   (public-settings/enable-query-caching true)
   (public-settings/enable-public-sharing false)
   (public-settings/start-of-week "monday")
+  (public-settings/admin-email "admin@localhost")
   (public-settings/custom-formatting
     {
      "type/Temporal" {
-      "date_style" "D MMMM, YYYY",
-      "time_style" "k:mm"
-      },
+                      "date_style" "D MMMM, YYYY",
+                      "time_style" "k:mm"
+                      },
      "type/Currency" {
-      "currency" "EUR"
-      }
+                      "currency" "EUR"
+                      }
      }
     )
+
+  (when (config/config-str :mb-cloud)
+    (public-settings/cloud-environment true)
+    (public-settings/site-url (str "https://answers-" tenant-id ".cloud.bigconnect.io"))
+    (public-settings/redirect-all-requests-to-https false)
+    (public-settings/enable-embedding true)
+    (public-settings/embedding-app-origin "SAMEORIGIN"))
 
   (when (config/config-str :mb-ldap-enabled)
     (ldap/ldap-enabled true)
@@ -42,7 +48,7 @@
     (ldap/ldap-user-filter (config/config-str :mb-ldap-user-filter))
     (ldap/ldap-group-sync true)
     (ldap/ldap-group-base (config/config-str :mb-ldap-group-base))
-    (ldap/ldap-group-mappings { (eval '(config/config-str :mb-ldap-admin-group-dn)) [2] }))
+    (ldap/ldap-group-mappings { (eval (config/config-str :mb-ldap-admin-group-dn)) [2] }))
 
   (setup/clear-token!))
 
@@ -53,7 +59,7 @@
                              :last_name "Administrator"
                              :password (str (java.util.UUID/randomUUID))
                              :is_superuser true)]
-    (user/set-password! (:id new-user) (str (java.util.UUID/randomUUID)))))
+    (user/set-password! (:id new-user) "asdqwe123")))
 
 (defn init-tenant []
   (let [tenant (config/config-str :tenant-id)]

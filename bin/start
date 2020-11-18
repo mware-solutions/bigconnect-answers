@@ -13,8 +13,14 @@ JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8"            # Use UTF-8
 JAVA_CMD=$JAVA_HOME/bin/java
 
 echo "Using these JAVA_OPTS: ${JAVA_OPTS}"
+DB_FILE=$MB_DB_FILE
+if [ -z $MB_DB_FILE ]; then
+  DB_FILE=metabase
+fi
 
-if [ ! -f "/app/metabase.db.mv.db" ]; then
+echo "Database location: $DB_FILE.mv.db"
+
+if [ ! -f "$DB_FILE.mv.db" ]; then
   $JAVA_CMD $JAVA_OPTS -jar ./target/uberjar/metabase.jar cloud-init
 fi
 

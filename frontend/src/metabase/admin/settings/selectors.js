@@ -16,7 +16,6 @@ import EmbeddingLegalese from "./components/widgets/EmbeddingLegalese";
 import EmbeddingLevel from "./components/widgets/EmbeddingLevel";
 import FormattingWidget from "./components/widgets/FormattingWidget";
 
-import SettingsUpdatesForm from "./components/SettingsUpdatesForm";
 import SettingsEmailForm from "./components/SettingsEmailForm";
 import SettingsSetupList from "./components/SettingsSetupList";
 import SettingsSlackForm from "./components/SettingsSlackForm";
@@ -153,6 +152,30 @@ const SECTIONS = updateSectionsWithPlugins({
       },
     ],
   },
+  slack: {
+    name: "Slack",
+    component: SettingsSlackForm,
+    settings: [
+      {
+        key: "slack-token",
+        display_name: t`Slack API Token`,
+        description: "",
+        placeholder: t`Enter the token you received from Slack`,
+        type: "string",
+        required: false,
+        autoFocus: true,
+      },
+      {
+        key: "metabot-enabled",
+        display_name: "MetaBot",
+        type: "boolean",
+        // TODO: why do we have "defaultValue" here in addition to the "default" specified by the backend?
+        defaultValue: false,
+        required: true,
+        autoFocus: false,
+      },
+    ],
+  },
   authentication: {
     name: t`Authentication`,
     settings: [], // added by plugins
@@ -238,6 +261,61 @@ const SECTIONS = updateSectionsWithPlugins({
       },
     ],
   },
+  embedding_in_other_applications: {
+    name: t`Embedding in other Applications`,
+    settings: [
+      {
+        key: "enable-embedding",
+        display_name: t`Enable Embedding Metabase in other Applications`,
+        type: "boolean",
+        getHidden: settings => settings["enable-embedding"],
+        onChanged: async (
+          oldValue,
+          newValue,
+          settingsValues,
+          onChangeSetting,
+        ) => {
+          // Generate a secret key if none already exists
+          if (
+            !oldValue &&
+            newValue &&
+            !settingsValues["embedding-secret-key"]
+          ) {
+            const result = await UtilApi.random_token();
+            await onChangeSetting("embedding-secret-key", result.token);
+          }
+        },
+      },
+      {
+        key: "enable-embedding",
+        display_name: t`Enable Embedding Metabase in other Applications`,
+        type: "boolean",
+        getHidden: settings => !settings["enable-embedding"],
+      },
+      // {
+      //   widget: EmbeddingLevel,
+      //   getHidden: settings => !settings["enable-embedding"],
+      // },
+      {
+        key: "embedding-secret-key",
+        display_name: t`Embedding secret key`,
+        widget: SecretKeyWidget,
+        getHidden: settings => !settings["enable-embedding"],
+      },
+      {
+        key: "-embedded-dashboards",
+        display_name: t`Embedded Dashboards`,
+        widget: EmbeddedDashboardListing,
+        getHidden: settings => !settings["enable-embedding"],
+      },
+      {
+        key: "-embedded-questions",
+        display_name: t`Embedded Questions`,
+        widget: EmbeddedQuestionListing,
+        getHidden: settings => !settings["enable-embedding"],
+      },
+    ],
+  },
   caching: {
     name: t`Caching`,
     settings: [
@@ -309,7 +387,12 @@ export const getSections = createSelector(
 
     const settingsByKey = _.groupBy(settings, "key");
     const sectionsWithAPISettings = {};
+    const cloud = MetabaseSettings.get('cloud-environment') || false;
+
     for (const [slug, section] of Object.entries(SECTIONS)) {
+      if (cloud && slug && slug.startsWith('authentication'))
+        continue;
+
       const settings = section.settings.map(function(setting) {
         const apiSetting =
           settingsByKey[setting.key] && settingsByKey[setting.key][0];
@@ -323,11 +406,20 @@ export const getSections = createSelector(
           return setting;
         }
       });
-      sectionsWithAPISettings[slug] = { ...section, settings };
+      sectionsWithAPISettings[slug] = {
+        ...section,
+        settings: cloud ? filterCloudSettings(settings) : settings
+      };
     }
     return sectionsWithAPISettings;
   },
 );
+
+const DISALLOWED_CLOUD_SETTINGS = ["application-name", "site-name", "site-url", "redirect-all-requests-to-https"]
+
+const filterCloudSettings = (settings) => _.filter(settings, s => {
+  return !_.contains(DISALLOWED_CLOUD_SETTINGS, s.key)
+})
 
 export const getActiveSectionName = (state, props) => props.params.splat;
 

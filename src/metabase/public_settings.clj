@@ -41,6 +41,11 @@
       (ldap-configured?)
       (ee-sso-configured?)))
 
+(defsetting cloud-environment
+            (deferred-tru "Is this instance deployed in the Cloud")
+            :type    :boolean
+            :default false)
+
 (defsetting check-for-updates
   (deferred-tru "Identify when new versions of Metabase are available.")
   :type    :boolean

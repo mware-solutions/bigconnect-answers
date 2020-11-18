@@ -31,7 +31,7 @@ RUN $JAVA_HOME/bin/keytool -noprompt -import -trustcacerts -alias aws-rds \
 # expose our default runtime port
 EXPOSE 3000
 
-ENV MB_DB_FILE=/data/metabase.db
+ENV MB_DB_FILE=/data/metabase
 
 VOLUME /data
 

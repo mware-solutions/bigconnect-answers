@@ -77,7 +77,7 @@ function enabledApplicationNameReplacement() {
 }
 
 function replaceApplicationName(string) {
-  return string.replace(/Metabase/g, 'Answers');
+  return string.replace(/Metabase/g, 'BigConnect Answers');
 }
 
 enabledApplicationNameReplacement();
