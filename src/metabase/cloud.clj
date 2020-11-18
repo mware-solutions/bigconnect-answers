@@ -17,6 +17,7 @@
   (public-settings/check-for-updates false)
   (public-settings/enable-query-caching true)
   (public-settings/enable-public-sharing false)
+  (public-settings/enable-embedding false)
   (public-settings/start-of-week "monday")
   (public-settings/admin-email "admin@localhost")
   (public-settings/custom-formatting
@@ -35,8 +36,7 @@
     (public-settings/cloud-environment true)
     (public-settings/site-url (str "https://answers-" tenant-id ".cloud.bigconnect.io"))
     (public-settings/redirect-all-requests-to-https false)
-    (public-settings/enable-embedding true)
-    (public-settings/embedding-app-origin "SAMEORIGIN"))
+    (public-settings/embedding-app-origin "https://console.cloud.bigconnect.io"))
 
   (when (config/config-str :mb-ldap-enabled)
     (ldap/ldap-enabled true)

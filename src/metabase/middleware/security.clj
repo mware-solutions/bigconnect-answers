@@ -87,7 +87,7 @@
 
 (defn- embedding-app-origin
   []
-  (when (and (public-settings/enable-embedding) (public-settings/embedding-app-origin))
+  (when (public-settings/embedding-app-origin)
     (public-settings/embedding-app-origin)))
 
 (defn- content-security-policy-header-with-frame-ancestors
