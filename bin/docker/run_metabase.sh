@@ -5,7 +5,6 @@ if [ -z "$MB_JETTY_HOST" ]; then
     export MB_JETTY_HOST=0.0.0.0
 fi
 
-
 # Metabase Database Info - this is just about what db the Metabase application uses for internal storage
 
 # AWS Elastic Beanstalk w/ RDS
@@ -36,7 +35,7 @@ MUID=${MUID:-2000}
 getent group metabase > /dev/null 2>&1
 group_exists=$?
 if [ $group_exists -ne 0 ]; then
-    addgroup -g $MGID -S metabase
+    addgroup --system --gid $MGID metabase
 fi
 
 # create the user if it does not exist
@@ -44,7 +43,7 @@ fi
 id -u metabase > /dev/null 2>&1
 user_exists=$?
 if [[ $user_exists -ne 0 ]]; then
-    adduser -D -u $MUID -G metabase metabase
+    adduser -gecos "" --disabled-password --uid $MUID --ingroup metabase metabase
 fi
 
 db_file=${MB_DB_FILE:-/metabase.db}
@@ -114,6 +113,7 @@ JAVA_OPTS="${JAVA_OPTS} -XX:+IgnoreUnrecognizedVMOptions"
 JAVA_OPTS="${JAVA_OPTS} -Dfile.encoding=UTF-8"
 JAVA_OPTS="${JAVA_OPTS} -Dlogfile.path=target/log"
 JAVA_OPTS="${JAVA_OPTS} -server"
+JAVA_CMD=$JAVA_HOME/bin/java
 
 if [ ! -z "$JAVA_TIMEZONE" ]; then
     JAVA_OPTS="${JAVA_OPTS} -Duser.timezone=${JAVA_TIMEZONE}"
@@ -137,7 +137,11 @@ if [ -f "${INITIAL_DB}" ]; then
     echo "Done."
 fi
 
+if [[ $db_exists = "false" ]]; then
+    su metabase -s /bin/sh -c "$JAVA_CMD $JAVA_OPTS -jar /app/metabase.jar cloud-init"
+fi
+
 # Launch the application
 # exec is here twice on purpose to  ensure that metabase runs as PID 1 (the init process)
 # and thus receives signals sent to the container. This allows it to shutdown cleanly on exit
-exec su metabase -s /bin/sh -c "exec java $JAVA_OPTS -jar /app/metabase.jar $@"
+exec su metabase -s /bin/sh -c "exec $JAVA_CMD $JAVA_OPTS -jar /app/metabase.jar $@"
