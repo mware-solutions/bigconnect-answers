@@ -11,7 +11,7 @@ type Props = {
 
 const LogoBadge = ({ dark }: Props) => (
   <a
-    href="https://metabase.com/"
+    href="https://bigconnect.io/"
     target="_blank"
     className="h4 flex text-bold align-center no-decoration"
   >
