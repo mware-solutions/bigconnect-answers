@@ -20,7 +20,7 @@ COPY ./bin/docker/run_metabase.sh /app/
 # create the plugins directory, with writable permissions
 RUN mkdir -p /plugins
 RUN chmod a+rwx /plugins
-COPY ./plugins/* /plugins/
+COPY ./resources/modules/* /plugins/
 
 # expose our default runtime port
 EXPOSE 3000

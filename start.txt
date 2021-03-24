@@ -1,2 +1,0 @@
-# lein with-profiles +include-all-drivers run
-# yarn build-hot
